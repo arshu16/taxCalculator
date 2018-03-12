@@ -1,4 +1,5 @@
 export class Tax {
-    supperanuation: number;
+    superannuation: number;
     income: number;
+    incomeType: string;
 }

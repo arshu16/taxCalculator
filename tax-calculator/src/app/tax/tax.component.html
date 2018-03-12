@@ -1,22 +1,76 @@
-<div fxLayout="column" fxLayoutAlign="space-around stretch">
-  <form name="tax-estimation-form">
-    <div fxLayout="column" fxLayoutAlign="space-around start">
-      <mat-form-field>
-        <input name="supperanuation" [(ngModel)]="tax.supperanuation" matInput min="9.5" max="100" type="number" placeholder="Supperanuation (Percentage)">
-        <mat-hint align="end">=9.5%</mat-hint>
-      </mat-form-field>
-      <mat-form-field>
-        <input name="income" [(ngModel)]="tax.income" matInput min="0" type="number" placeholder="Income (Dollars)">
-        <mat-hint align="end"> > $0</mat-hint>
-      </mat-form-field>
-      <mat-form-field>
-        <input matInput placeholder="Income (Dollars)">
-        <mat-hint align="end"> > $0</mat-hint>
-      </mat-form-field>
-    </div>
-  </form>
-  <button mat-raised-button color="warn">Clear</button>
-  <button mat-raised-button color="primary">Estimate Tax</button>
-</div>
+<section class="tax-estimation-component" fxLayoutAlign="start start" fxLayoutAlign.sm="start stretch" fxLayoutAlign.xs="start stretch" fxLayoutGap="10px" fxLayout="row" fxLayout.sm="column" fxLayout.xs="column">
+  <mat-card fxFlex id="tax-input-component" class="card">
+    <form (ngSubmit)="onSubmit(tax)" novalidate [formGroup]="tax">
+      <mat-card-content>
+        <div fxLayoutGap="10px" fxLayout="column" fxLayoutAlign="space-around start">
+          <mat-form-field>
+            <input autofocus #superannuationElement name="superannuation" formControlName="superannuation" matInput min="9.5" max="100" type="number" placeholder="Superannuation">
+            <span matSuffix>%</span>
+            <mat-hint align="end"> >= 9.5%</mat-hint>
+            <mat-error *ngIf="tax.controls.superannuation.errors?.required">
+              Superannuation is required
+            </mat-error>
+            <mat-error *ngIf="tax.controls.superannuation.errors?.min">
+              Superannuation cannot be less than
+              <strong>9.5%</strong>
+            </mat-error>
+            <mat-error *ngIf="tax.controls.superannuation.errors?.max">
+              Superannuation cannot be more than
+              <strong>100%</strong>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <input name="income" formControlName="income" matInput min="0" type="number" placeholder="Income">
+            <span matPrefix>$&nbsp;</span>
+            <mat-hint align="end"> > $0</mat-hint>
+            <mat-error *ngIf="tax.controls.income.errors?.required">
+              Income is required
+            </mat-error>
+            <mat-error *ngIf="tax.controls.income.errors?.min">
+              Superannuation cannot be less than
+              <strong>0$</strong>
+            </mat-error>
+          </mat-form-field>
+          <mat-radio-group formControlName="income-type" class="radio-group" name="income-type">
+            <mat-radio-button class="radio-button" value="exclusive">
+              Gross
+            </mat-radio-button>
+            <mat-radio-button class="radio-button" value="inclusive">
+              Gross + Superannuation
+            </mat-radio-button>
+            <mat-error *ngIf="tax.controls['income-type'].errors?.required">
+              Type of income is required
+            </mat-error>
+          </mat-radio-group>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button (click)="clearForm(tax)" mat-raised-button color="warn">Clear</button>
+        <button type="submit" [disabled]="!tax.valid" mat-raised-button color="primary">Estimate Tax</button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+  <mat-card *ngIf="dataSource.data.length" fxFlex id="tax-result-component" class="card">
+    <mat-card-title>
+      Result:
+    </mat-card-title>
+    <mat-card-content>
+      <mat-table #table [dataSource]="dataSource">
+        <!-- Value Column -->
+        <ng-container matColumnDef="value">
+          <mat-header-cell *matHeaderCellDef> Value </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.value}} </mat-cell>
+        </ng-container>
 
-{{tax.supperanuation}} {{tax.income}}
+        <!-- Amount Column -->
+        <ng-container matColumnDef="amount">
+          <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{getParsedAmount(element.amount)}} </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+    </mat-card-content>
+  </mat-card>
+</section>

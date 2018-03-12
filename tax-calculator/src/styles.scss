@@ -13,6 +13,10 @@ $theme: mat-light-theme($primary, $accent, $warn);
 
 @include angular-material-theme($theme);
 
+html {
+    font-size: 10px;
+}
+
 body {
     font-family: $mat-font-family;
     font-weight: normal;

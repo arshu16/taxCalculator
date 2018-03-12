@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import {
@@ -27,6 +27,7 @@ import { TaxComponent } from './tax/tax.component';
     BrowserModule,
     MaterialModule,
     FlexLayoutModule,
+    ReactiveFormsModule,
     StoreModule.forRoot(reducers, { metaReducers }),
     StoreDevtoolsModule.instrument({
       name: 'NgRx Tax Calculator DevTools',
@@ -35,7 +36,8 @@ import { TaxComponent } from './tax/tax.component';
     EffectsModule.forRoot([])
   ],
   providers: [
-    { provide: RouterStateSerializer, useClass: CustomRouterStateSerializer }],
+    { provide: RouterStateSerializer, useClass: CustomRouterStateSerializer }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
