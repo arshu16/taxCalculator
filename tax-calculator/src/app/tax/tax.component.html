@@ -27,8 +27,11 @@
               Income is required
             </mat-error>
             <mat-error *ngIf="tax.controls.income.errors?.min">
-              Superannuation cannot be less than
+              Income cannot be less than
               <strong>0$</strong>
+            </mat-error>
+            <mat-error *ngIf="tax.controls.income.errors?.max">
+              Income can't be more than a billion
             </mat-error>
           </mat-form-field>
           <mat-radio-group formControlName="income-type" class="radio-group" name="income-type">
@@ -45,8 +48,8 @@
         </div>
       </mat-card-content>
       <mat-card-actions>
-        <button (click)="clearForm(tax)" mat-raised-button color="warn">Clear</button>
         <button type="submit" [disabled]="!tax.valid" mat-raised-button color="primary">Estimate Tax</button>
+        <button [disabled]="!tax.valid" (click)="clearForm(tax)" mat-raised-button color="warn">Clear</button>
       </mat-card-actions>
     </form>
   </mat-card>

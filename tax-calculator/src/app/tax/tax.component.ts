@@ -16,15 +16,12 @@ import { ResultItem } from './../store/models/result-item';
 import { TAX_KEY_TO_HUMAN_MAP } from './../shared/constants';
 import { Tax } from '../tax';
 
-export interface Result {
-  value: string;
-  amount: number;
-}
 @Component({
   selector: 'app-tax',
   templateUrl: './tax.component.html',
   styleUrls: ['./tax.component.scss']
 })
+
 export class TaxComponent implements OnInit {
   displayedColumns = ['value', 'amount'];
   dataSource = new MatTableDataSource([]);
@@ -49,7 +46,11 @@ export class TaxComponent implements OnInit {
       ),
       income: new FormControl(
         '',
-        Validators.compose([Validators.required, Validators.min(0)])
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(1000000000) //One Billion, Anything more than that and you don't need to use this
+        ])
       ),
       'income-type': new FormControl(
         'exclusive',
