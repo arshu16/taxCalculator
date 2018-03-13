@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatTableDataSource } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {
   FormControl,
@@ -8,8 +7,13 @@ import {
   FormGroup,
   Validators
 } from '@angular/forms';
-import { ErrorStateMatcher } from '@angular/material/core';
+import { MatTableDataSource } from '@angular/material';
+import { Store } from '@ngrx/store';
 
+import * as FromGeneralReducers from './../store/general/general.reducers';
+import * as FromGeneralActions from './../store/general/general.actions';
+import { ResultItem } from './../store/models/result-item';
+import { TAX_KEY_TO_HUMAN_MAP } from './../shared/constants';
 import { Tax } from '../tax';
 
 export interface Result {
@@ -25,17 +29,15 @@ export class TaxComponent implements OnInit {
   displayedColumns = ['value', 'amount'];
   dataSource = new MatTableDataSource([]);
   tax: FormGroup;
-  NAME = {
-    gross: 'Gross',
-    superannuationAmount: 'Supperannuation',
-    total: 'Gross plus Superannuation',
-    tax: 'Tax',
-    net: 'Net',
-    netTotal: 'Net plus Superannuation'
-  };
   @ViewChild('superannuationElement') superannuationElement: any;
 
-  constructor() {
+  constructor(
+    private store: Store<{ general: FromGeneralReducers.GeneralState }>
+  ) {
+    this.initForm();
+  }
+
+  initForm() {
     this.tax = new FormGroup({
       superannuation: new FormControl(
         '',
@@ -56,11 +58,11 @@ export class TaxComponent implements OnInit {
     });
   }
 
-  public ngAfterViewInit(): void {
-    this.superannuationElement.nativeElement.focus();
+  ngOnInit() {
+    this.store.select('general').subscribe(data => {
+      this.dataSource.data = <any []>data;
+    });
   }
-
-  ngOnInit() {}
 
   /**
    * This function returns tax after calculation based on income brackets
@@ -123,14 +125,15 @@ export class TaxComponent implements OnInit {
 
   clearForm(form: FormGroup): void {
     form.reset();
-    this.dataSource.data = [];
+    this.store.dispatch(new FromGeneralActions.ClearResult());
     this.superannuationElement.nativeElement.focus();
   }
 
   generateTable(Result: any = {}): void {
-    this.dataSource.data = <Result[]>Object.keys(Result).map(key => {
-      return { value: this.NAME[key], amount: Result[key] };
+    var result = Object.keys(Result).map(key => {
+      return <ResultItem>{ value: TAX_KEY_TO_HUMAN_MAP[key], amount: Result[key] };
     });
+    this.store.dispatch(new FromGeneralActions.AddResult(result));
   }
 
   getParsedAmount(amount: number): string {

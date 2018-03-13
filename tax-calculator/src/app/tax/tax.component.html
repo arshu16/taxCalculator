@@ -50,7 +50,7 @@
       </mat-card-actions>
     </form>
   </mat-card>
-  <mat-card *ngIf="dataSource.data.length" fxFlex id="tax-result-component" class="card">
+  <mat-card *ngIf="dataSource.data && dataSource.data.length" fxFlex id="tax-result-component" class="card">
     <mat-card-title>
       Result:
     </mat-card-title>

@@ -6,21 +6,20 @@ import { EffectsModule } from '@ngrx/effects';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import {
-  StoreRouterConnectingModule,
-  RouterStateSerializer
-} from '@ngrx/router-store';
+import { StoreRouterConnectingModule, RouterStateSerializer } from '@ngrx/router-store';
+import { RouterModule } from '@angular/router';
 
-import { reducers, metaReducers } from './reducers';
+import { ROUTE } from './app.routing';
+import { reducer, metaReducers } from './store/app.reducer';
 import { MaterialModule } from './modules/material.module';
 import { CustomRouterStateSerializer } from './shared/utils';
-
 import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
 import { TaxComponent } from './tax/tax.component';
+import { PageNotfoundComponent } from './common/404.component';
 
 @NgModule({
-  declarations: [AppComponent, TaxComponent],
+  declarations: [AppComponent, TaxComponent, PageNotfoundComponent],
   imports: [
     BrowserAnimationsModule,
     FormsModule,
@@ -28,7 +27,13 @@ import { TaxComponent } from './tax/tax.component';
     MaterialModule,
     FlexLayoutModule,
     ReactiveFormsModule,
-    StoreModule.forRoot(reducers, { metaReducers }),
+    RouterModule.forRoot(ROUTE, {
+      useHash: false
+    }),
+    StoreModule.forRoot(reducer, { metaReducers }),
+    StoreRouterConnectingModule.forRoot({
+      stateKey: 'router'
+    }),
     StoreDevtoolsModule.instrument({
       name: 'NgRx Tax Calculator DevTools',
       logOnly: environment.production
