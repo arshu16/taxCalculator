@@ -125,7 +125,6 @@ export class TaxComponent implements OnInit {
   }
 
   clearForm(form: FormGroup): void {
-    form.reset();
     this.store.dispatch(new FromGeneralActions.ClearResult());
     this.superannuationElement.nativeElement.focus();
   }
